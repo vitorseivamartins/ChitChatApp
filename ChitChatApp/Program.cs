@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ChitChatApp
 {
-    class Program
+    public class Program
     {
         private static Dictionary<TcpClient, string> _clients = new Dictionary<TcpClient, string>();
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 666);
             listener.Start();
@@ -38,7 +37,7 @@ namespace ChitChatApp
             sw.Flush();
         }
 
-        static async Task ReceiveData(TcpClient client)
+        private static async Task ReceiveData(TcpClient client)
         {
             while (true)
             {
@@ -92,7 +91,6 @@ namespace ChitChatApp
                 catch (Exception e)
                 {
                     Console.WriteLine("Something went wrong.");
-                    //sw.WriteLine(e.ToString());
                 }
             }
         }

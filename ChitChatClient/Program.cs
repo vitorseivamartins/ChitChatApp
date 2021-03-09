@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ChitChatClient
 {
-    class Program
+    public class Program
     {
         private static TcpClient _client = new TcpClient("127.0.0.1", 666);
 
@@ -17,10 +17,10 @@ namespace ChitChatClient
                 SendData(Console.ReadLine());  
         } 
 
-        static async Task ReceiveData()
+        static private async Task ReceiveData()
         {
             while(true)
-                GetData();
+                Console.WriteLine(GetData());
         }
 
         static private void SendData(string data)
@@ -30,11 +30,11 @@ namespace ChitChatClient
             stream.Write(sendData, 0, sendData.Length);
         }
 
-        static private void GetData()
+        static private string GetData()
         {
             NetworkStream stream = _client.GetStream();
             StreamReader sr = new StreamReader(stream);
-            Console.WriteLine(sr.ReadLine());
+            return sr.ReadLine();
         }
     }
 }
