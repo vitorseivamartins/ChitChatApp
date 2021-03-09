@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,20 +15,18 @@ namespace ChitChatApp
 
         static void Main(string[] args)
         {
-            TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 1302);
+            TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 666);
             listener.Start();
+            Console.WriteLine("Server started");
             while (true)
             {
-                Console.WriteLine("Server started");
                 TcpClient client = listener.AcceptTcpClient();
                 Console.WriteLine("Client accepted");
 
                 _clients.Add(client, null);
                 WelcomeUser(client);
 
-                Task.Run(() => ReceiveData(client));
-            
-                //Console.WriteLine("Waiting for a connection.");
+                Task.Run(() => ReceiveData(client));      
             }
         }
 
@@ -39,21 +38,11 @@ namespace ChitChatApp
             sw.Flush();
         }
 
-        static async Task AcceptClient()
-        {
-            TcpListener listener = new TcpListener(System.Net.IPAddress.Any, 1302);
-            listener.Start();
-            TcpClient client = listener.AcceptTcpClient();
-            Console.WriteLine("Client accepted.");   
-        }
-
         static async Task ReceiveData(TcpClient client)
         {
             while (true)
             {
                 NetworkStream stream = client.GetStream();
-                //StreamReader sr = new StreamReader(client.GetStream());
-                //StreamWriter sw = new StreamWriter(client.GetStream());
 
                 try
                 {
@@ -79,7 +68,10 @@ namespace ChitChatApp
                                 _clients[client]));
                     }
                     else if (request.Contains("/exit"))
+                    {
                         ExitUser(client);
+                        break;
+                    }
                     else if (request.Contains("/p"))
                     {
                         var data = request.Split(" ");
@@ -96,8 +88,6 @@ namespace ChitChatApp
 
                     if (_clients[client] != null && !string.IsNullOrEmpty(response))
                         SendMessageToAllClients(response);
-
-
                 }
                 catch (Exception e)
                 {
@@ -136,9 +126,7 @@ namespace ChitChatApp
         private static void SendMessageToAllClients(string message)
         {
             foreach (var item in _clients)
-            {
                 SendMessageToClient(item.Key, message);
-            }
         }
     }
 }
